@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "DisplayResults";
+}
+
+<h2>DisplayResults</h2>
+
+@model List<string>
+
+<table>
+
+    @foreach (string result in Model)
+    {
+        <tr>
+            <td>@result</td>
+        </tr>
+    }
+</table>
