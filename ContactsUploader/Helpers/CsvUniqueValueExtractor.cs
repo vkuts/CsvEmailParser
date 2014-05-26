@@ -8,7 +8,7 @@ using System.Web;
 namespace ContactsUploader.Helpers
 {
     /// <summary>
-    /// Given a csv file and a column (field) index, extracts the set of unique string values in that column
+    /// Given a csv file and a column (field) index, extracts the set of unique string values from that column
     /// </summary>
     public class CsvUniqueValueExtractor
     {
@@ -16,26 +16,38 @@ namespace ContactsUploader.Helpers
 
         private string _filename;
         private bool _hasHeaders;
-
+        
+        /// <summary>
+        /// Number of invalid values omitted from the last result returned
+        /// </summary>
         public int NumDiscardedValues { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="hasHeaders"></param>
+        /// <param name="filename">filename of the csv file to parse</param>
+        /// <param name="hasHeaders">whether the csv file given has a first row header</param>
         public CsvUniqueValueExtractor(string filename, bool hasHeaders)
         {
             _filename = filename;
             _hasHeaders = hasHeaders;
         }
 
-
+        /// <summary>
+        /// Extracts a set of unique values from the csv file at the given column index
+        /// </summary>
+        /// <param name="fieldIndex"></param>
+        /// <returns></returns>
         public IEnumerable<string> GetUnique(int fieldIndex)
         {
             return GetUnique(fieldIndex, (s) => true);
         }
 
+        /// <summary>
+        /// Extracts a set of unique values from the csv file at the given column index. Omits values that are invalidated by the supplied delegate.
+        /// </summary>
+        /// <param name="fieldIndex"></param>
+        /// <returns></returns>
         public IEnumerable<string> GetUnique(int fieldIndex, Func<string, bool> isValidFormat)
         {
             NumDiscardedValues = 0;
@@ -78,6 +90,7 @@ namespace ContactsUploader.Helpers
 
         private void csvReader_ParseError(object sender, ParseErrorEventArgs e)
         {
+            // skip over incomplete data rows, but let all other exceptions bubble up
             if (e.Error is MissingFieldCsvException)
             {
                 _logger.Warn(string.Format("Skipping recordIndex={0} because of missing expected field at index {1}",

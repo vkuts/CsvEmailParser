@@ -13,6 +13,11 @@ namespace ContactsUploader.Helpers
     {
         private NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Validate email address string
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public bool IsValid(string email)
         {
             // check for null/empty value early because MailAddress would throw a different exception in those cases

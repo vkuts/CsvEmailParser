@@ -9,21 +9,32 @@ using System.Web.Mvc;
 
 namespace ContactsUploader.Controllers
 {
+    /// <summary>
+    /// Uploads and displays contact lists
+    /// </summary>
     public class ContactsUploadController : Controller
     {
         private const string TempDataEmailResult = "result";
-        //
-        // GET: /ContactsUpload/
+        
+        /// <summary>
+        /// Displays upload contacts view
+        /// </summary>
+        /// <returns></returns>
         public ActionResult DisplayView()
         {
             return View("UploadContacts");
         }
 
+        /// <summary>
+        /// Uploads contact list, processes it and redirects to the display view
+        /// </summary>
+        /// <param name="upload"></param>
+        /// <returns></returns>
         [HttpPost]
         [HandleError(ExceptionType = typeof(CsvParsingException), View = "ProcessingError")]
         public ActionResult Upload(ContactListUpload upload)
         {
-            if (upload.File.ContentLength > 0)
+            if (upload.File != null && upload.File.ContentLength > 0)
             {
                 var filename = Path.GetFileName(upload.File.FileName);
                 var path = Path.Combine(Server.MapPath("~/Content/UploadBin"), filename);
@@ -50,9 +61,14 @@ namespace ContactsUploader.Controllers
             return RedirectToAction("DisplayResults");
         }
 
+        /// <summary>
+        /// Displays a list of contacts
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult DisplayResults()
         {
+            // Expects that the list of contacts is stored in TempData. This is currently only possible if the user gets here via Upload action.
             IEnumerable<string> results = new List<string>();
             if(TempData.ContainsKey(TempDataEmailResult)){
                 results = (IEnumerable<string>)TempData[TempDataEmailResult];
