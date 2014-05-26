@@ -14,14 +14,14 @@ namespace ContactsUploader.Controllers
         private const string TempDataEmailResult = "result";
         //
         // GET: /ContactsUpload/
-        public ActionResult Index()
+        public ActionResult DisplayView()
         {
-            return View();
+            return View("UploadContacts");
         }
 
         [HttpPost]
         [HandleError(ExceptionType = typeof(CsvParsingException), View = "ProcessingError")]
-        public ActionResult Index(ContactListUpload upload)
+        public ActionResult Upload(ContactListUpload upload)
         {
             if (upload.File.ContentLength > 0)
             {
@@ -31,12 +31,12 @@ namespace ContactsUploader.Controllers
 
                 try
                 {
-                    var valueExtractor = new CsvUniqueEmailExtractor(path);
+                    var emailExtractor = new CsvUniqueEmailExtractor(path);
 
-                    IEnumerable<string> uniqueEmails = valueExtractor.GetUnique();
+                    IEnumerable<string> uniqueEmails = emailExtractor.GetUnique();
                     IEnumerable<string> alphaSortedEmails = uniqueEmails.OrderBy(e => e).ToList();
 
-                    // TODO: use ajax instead of this lame temp data multi-view approach
+                    // SHOULDDO: update current view with results via ajax rather than using TempData and redirecting
 
                     TempData[TempDataEmailResult] = alphaSortedEmails;
 
@@ -53,7 +53,11 @@ namespace ContactsUploader.Controllers
         [HttpGet]
         public ActionResult DisplayResults()
         {
-            return View("DisplayResults", (IEnumerable<string>)TempData[TempDataEmailResult]);
+            IEnumerable<string> results = new List<string>();
+            if(TempData.ContainsKey(TempDataEmailResult)){
+                results = (IEnumerable<string>)TempData[TempDataEmailResult];
+            }
+            return View("DisplayResults", results);
         }
     }
 }

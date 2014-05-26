@@ -8,7 +8,6 @@ namespace ContactsUploader
     {
         public void Configuration(IAppBuilder app)
         {
-            ConfigureAuth(app);
         }
     }
 }

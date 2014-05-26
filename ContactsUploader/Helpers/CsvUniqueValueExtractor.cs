@@ -41,8 +41,8 @@ namespace ContactsUploader.Helpers
             NumDiscardedValues = 0;
 
             // Using a HashSet here for two reasons:
-            // 1. Get an implicit guarrantee that all emails added to the collection are unique while maintaining O(1) insertion speed
-            // 2. Minimize memory footprint required by keeping only the unique list of emails in memory during parsing
+            // 1. Get an implicit guarrantee that all values added to the collection are unique while maintaining O(1) insertion speed
+            // 2. Minimize memory footprint required by keeping only the unique list of values in memory while parsing
             var uniqueValues = new HashSet<string>();
 
             using(var reader = new StreamReader(_filename))
